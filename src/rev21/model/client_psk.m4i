@@ -143,7 +143,7 @@ let
     binder = compute_binder()
     messages = <tmp_messages, ClientHello>
 in
-    [ State(C1, tid, C, S, PrevClientState),
+    [ State(C1, tid, C, S, PrevClientState)[no_precomp],
       CachePSK(tid, S, prev_res_psk, prev_auth_status, NewSessionTicket, psk_type),
       Fr(new_nc),
       Fr(new_x),
@@ -228,7 +228,7 @@ let
 
     messages = <prev_messages, ServerHello>
 in
-    [ State(C1, tid, C, S, PrevClientState),
+    [ State(C1, tid, C, S, PrevClientState)[no_precomp],
       In(ServerHello)
     ]
   --[ C1_PSK(tid),
@@ -256,7 +256,7 @@ let
     app_keys = keygen(sats, app_key_label())
     ems = exporter_master_secret()
 in
-    [ State(C2d, tid, C, S, PrevClientState),
+    [ State(C2d, tid, C, S, PrevClientState)[no_precomp],
       In(senc{Finished}hs_keys)
     ]
   --[ C2d_PSK(tid),

@@ -34,7 +34,7 @@ let
 
     res_psk = rms
 in
-    [ State(S4, tid, S, C, PrevServerState),
+    [ State(S4, tid, S, C, PrevServerState)[no_precomp],
       SendStream(tid, S, C, auth_status, app_keys),
       Fr(ticket),
       Fr(ticket_age_add)
@@ -61,7 +61,7 @@ let
 
     res_psk = rms
 in
-    [ State(C4, tid, C, S, PrevClientState),
+    [ State(C4, tid, C, S, PrevClientState)[no_precomp],
       RecvStream(tid, C, S, auth_status, app_keys),
       In(senc{NewSessionTicket}app_keys)
     ]
@@ -87,7 +87,7 @@ let
     certificate_request_context = ~cert_req_ctxt
 //    cert_req_ctxt = ~cert_req_ctxt
 in
-    [ State(S4, tid, S, C, PrevServerState),
+    [ State(S4, tid, S, C, PrevServerState)[no_precomp],
       SendStream(tid, S, C, prev_auth_status, app_keys),
       Fr(certificate_request_context)
     ]
@@ -112,7 +112,7 @@ let
 
 //    cert_req_ctxt = certificate_request_context
 in
-    [ State(C4, tid, C, S, PrevClientState),
+    [ State(C4, tid, C, S, PrevClientState)[no_precomp],
       RecvStream(tid, C, S, prev_auth_status, app_keys),
       In(senc{CertificateRequest}app_keys)
     ]
@@ -151,7 +151,7 @@ let
     auth_status = <'auth', prev_sas>
 in
 
-    [ State(C4, tid, C, S, PrevClientState),
+    [ State(C4, tid, C, S, PrevClientState)[no_precomp],
       SendStream(tid, C, S, prev_auth_status, app_keyc),
       !Ltk(C, ~ltkC),
       ClientCertReq(tid, C, S, certificate_request_context)
@@ -192,7 +192,7 @@ let
     auth_status = <prev_sas, 'auth'>
     messages = tmp_messages
 in
-    [ State(S4, tid, S, C, PrevServerState),
+    [ State(S4, tid, S, C, PrevServerState)[no_precomp],
       RecvStream(tid, S, C, prev_auth_status, app_keyc),
       !Pk(C, pk(~ltkC)),
       ServerCertReq(tid, S, C, certificate_request_context),
@@ -222,7 +222,7 @@ let
     cats = keygen(prev_cats, app_secret_label())
     app_keyc = keygen(cats, app_key_label())
 in
-    [ State(C4, tid, C, S, PrevClientState),
+    [ State(C4, tid, C, S, PrevClientState)[no_precomp],
       SendStream(tid, C, S, prev_auth_status, prev_app_keyc)
     ]
   --[ C4_update_req(tid),
@@ -244,7 +244,7 @@ let
     sats = keygen(prev_sats, app_secret_label())
     app_keys = keygen(sats, app_key_label())
 in
-    [ State(S4, tid, S, C, PrevServerState),
+    [ State(S4, tid, S, C, PrevServerState)[no_precomp],
       SendStream(tid, S, C, prev_auth_status, prev_app_keys)
     ]
   --[ S4_update_req(tid),
@@ -268,7 +268,7 @@ let
     app_keyc = keygen(cats, app_key_label())
     app_keys = keygen(sats, app_key_label())
 in
-    [ State(C4, tid, C, S, PrevClientState),
+    [ State(C4, tid, C, S, PrevClientState)[no_precomp],
       RecvStream(tid, C, S, prev_auth_status, prev_app_keys),
       SendStream(tid, C, S, prev_auth_status, prev_app_keyc),
       In(senc{KeyUpdate}prev_app_keys)
@@ -296,7 +296,7 @@ let
     app_keyc = keygen(cats, app_key_label())
     app_keys = keygen(sats, app_key_label())
 in
-    [ State(S4, tid, S, C, PrevServerState),
+    [ State(S4, tid, S, C, PrevServerState)[no_precomp],
       RecvStream(tid, S, C, prev_auth_status, prev_app_keyc),
       SendStream(tid, S, C, prev_auth_status, prev_app_keys),
       In(senc{KeyUpdate}prev_app_keyc)
@@ -321,7 +321,7 @@ let
     sats = keygen(prev_sats, app_secret_label())
     app_keys = keygen(sats, app_key_label())
 in
-    [ State(C4, tid, C, S, PrevClientState),
+    [ State(C4, tid, C, S, PrevClientState)[no_precomp],
       RecvStream(tid, C, S, prev_auth_status, prev_app_keys),
       In(senc{KeyUpdateReply}prev_app_keys)
     ]
@@ -344,7 +344,7 @@ let
     cats = keygen(prev_cats, app_secret_label())
     app_keyc = keygen(cats, app_key_label())
 in
-    [ State(S4, tid, S, C, PrevServerState),
+    [ State(S4, tid, S, C, PrevServerState)[no_precomp],
       RecvStream(tid, S, C, prev_auth_status, prev_app_keyc),
       In(senc{KeyUpdateReply}prev_app_keyc)
     ]

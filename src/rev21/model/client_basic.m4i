@@ -146,7 +146,7 @@ let
 
     messages = <messages, ServerHello>
 in
-    [ State(C1, tid, C, S, PrevClientState),
+    [ State(C1, tid, C, S, PrevClientState)[no_precomp],
       In(ServerHello)
     ]
   --[ C1(tid),
@@ -174,7 +174,7 @@ let
     hs_keys = keygen(handshake_traffic_secret(server), hs_key_label())
 
 in
-    [ State(C2a, tid, C, S, PrevClientState),
+    [ State(C2a, tid, C, S, PrevClientState)[no_precomp],
       DHExp(x, tid, C)
     ]
   --[ C2a(tid),
@@ -197,7 +197,7 @@ let
     messages = <messages, EncryptedExtensions>
 
 in
-    [ State(C2b, tid, C, S, PrevClientState),
+    [ State(C2b, tid, C, S, PrevClientState)[no_precomp],
       In(senc{EncryptedExtensions}hs_keys)
     ]
   --[ C2b(tid),
@@ -219,7 +219,7 @@ let
     messages = <messages, CertificateRequest>
 
 in
-    [ State(C2c, tid, C, S, PrevClientState),
+    [ State(C2c, tid, C, S, PrevClientState)[no_precomp],
       In(senc{CertificateRequest}hs_keys)
     ]
   --[ C2c_req(tid),
@@ -236,7 +236,7 @@ let
     C = $C
     cert_req = '0'
 in
-    [ State(C2c, tid, C, S, PrevClientState)
+    [ State(C2c, tid, C, S, PrevClientState)[no_precomp]
     ]
   --[ C2c(tid),
       Instance(tid, C, 'client')
@@ -271,7 +271,7 @@ let
     // auth_status = <cas, sas>
     auth_status = <'0', 'auth'>
 in
-    [ State(C2d, tid, C, S, PrevClientState),
+    [ State(C2d, tid, C, S, PrevClientState)[no_precomp],
       !Pk(S, pk(~ltkS)),
       In(senc{Certificate, CertificateVerify, Finished}hs_keys)
     ]
@@ -308,7 +308,7 @@ let
     app_keys = keygen(sats, app_key_label())
 in
 
-    [ State(C3, tid, C, S, PrevClientState)
+    [ State(C3, tid, C, S, PrevClientState)[no_precomp]
     ]
   --[ C3(tid),
       Instance(tid, C, 'client'),
@@ -353,7 +353,7 @@ let
     auth_status = <'auth', 'auth'>
 in
 
-    [ State(C3, tid, C, S, PrevClientState),
+    [ State(C3, tid, C, S, PrevClientState)[no_precomp],
       RecvStream(tid, C, S, prev_auth_status, app_keys),
       !Ltk(C, ~ltkC)
     ]

@@ -79,7 +79,7 @@ let
 in
     [ In(ClientHello),
       Fr(ns),
-      State(S0, tid, S, C, PrevServerState)
+      State(S0, tid, S, C, PrevServerState)[no_precomp]
     ]
   --[ S0(tid),
       Neq(g1, g2)
@@ -106,7 +106,7 @@ let
     messages = <messages, HelloRetryRequest>
 
 in
-    [ State(S1, tid, S, C, PrevServerState)
+    [ State(S1, tid, S, C, PrevServerState)[no_precomp]
     ]
   --[ S1_retry(tid),
       Neq(prev_g, sg),
@@ -173,7 +173,7 @@ let
     hs_keys = keygen(handshake_traffic_secret(server), hs_key_label())
     hs_keyc = keygen(handshake_traffic_secret(client), hs_key_label())
 in
-    [ State(S2a, tid, S, C, PrevServerState),
+    [ State(S2a, tid, S, C, PrevServerState)[no_precomp],
       DHExp(y, tid, S)
     ]
   --[ S2a(tid),
@@ -195,7 +195,7 @@ let
 
     messages = <messages, EncryptedExtensions>
 in
-    [ State(S2b, tid, S, C, PrevServerState)
+    [ State(S2b, tid, S, C, PrevServerState)[no_precomp]
     ]
   --[ S2b(tid),
       Instance(tid, S, 'server')
@@ -216,7 +216,7 @@ let
     cert_req = '1' 
     messages = <messages, CertificateRequest>
 in
-    [ State(S2c, tid, S, C, PrevServerState)
+    [ State(S2c, tid, S, C, PrevServerState)[no_precomp]
     ]
   --[ S2c_req(tid),
       Instance(tid, S, 'server'),
@@ -235,7 +235,7 @@ let
     S = $S
     C = $C
 in
-    [ State(S2c, tid, S, C, PrevServerState)
+    [ State(S2c, tid, S, C, PrevServerState)[no_precomp]
     ]
   --[ S2c(tid),
       Instance(tid, S, 'server')
@@ -268,7 +268,7 @@ let
     // auth_status = <sas, cas>
     auth_status = <'auth', '0'>
 in
-    [ State(S2d, tid, S, C, PrevServerState),
+    [ State(S2d, tid, S, C, PrevServerState)[no_precomp],
       !Ltk(S, ~ltkS)
     ]
   --[ S2d(tid),
@@ -299,7 +299,7 @@ let
     app_keyc = keygen(cats, app_key_label())
     app_keys = keygen(sats, app_key_label())
 in
-    [ State(S3, tid, S, C, PrevServerState),
+    [ State(S3, tid, S, C, PrevServerState)[no_precomp],
       In(senc{Finished}hs_keyc)
     ]
   --[ S3(tid),
@@ -345,7 +345,7 @@ let
     app_keyc = keygen(cats, app_key_label())
     app_keys = keygen(sats, app_key_label())
 in
-    [ State(S3, tid, S, C, PrevServerState),
+    [ State(S3, tid, S, C, PrevServerState)[no_precomp],
       !Pk(C, pk(~ltkC)),
       SendStream(tid, S, C, prev_auth_status, app_keys),
       In(senc{Certificate, CertificateVerify, Finished}hs_keyc)

@@ -52,7 +52,7 @@ let
 
     ead_keyc = keygen(early_traffic_secret(client), early_app_key_label())
 in
-    [ State(S0, tid, S, C, PrevServerState),
+    [ State(S0, tid, S, C, PrevServerState)[no_precomp],
       In(ClientHello),
       Fr(ns),
       !ServerPSK(S, C, psk_res_psk, psk_auth_status, NewSessionTicket, psk_type)
@@ -175,7 +175,7 @@ let
     ems = exporter_master_secret()
 
 in
-    [ State(S2d, tid, S, C, PrevServerState)
+    [ State(S2d, tid, S, C, PrevServerState)[no_precomp]
     ]
   --[ S2d_PSK(tid),
       Neq(prev_psk_ke_mode, 'na'),
