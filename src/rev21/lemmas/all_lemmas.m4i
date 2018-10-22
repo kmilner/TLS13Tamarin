@@ -1,22 +1,22 @@
 define(<!uniq!>, <!
-lemma one_$1_per_tid [reuse]:
+lemma one_$1_per_tid [reuse, heuristic=S]:
     "All tid #i #j. $1(tid)@i & $1(tid)@j ==> #i = #j"
 !>)
 
 define(<!one_of!>, <!
-lemma $1_vs_$2 [reuse]:
+lemma $1_vs_$2 [reuse, heuristic=S]:
     "All tid #i #j. $1(tid)@i & $2(tid)@j ==> F"
 !>)
 
 
 define(<!lemma_tid_invariant!>, <!
-lemma tid_invariant [use_induction, reuse]:
+lemma tid_invariant [use_induction, reuse, heuristic=S]:
   "All tid actor role #i. Instance(tid, actor, role)@i==>
       (Ex #j. Start(tid, actor, role)@j & (#j < #i))"
 !>)
 
 define(<!lemma_one_start_per_tid!>, <!
-lemma one_start_per_tid [reuse]:
+lemma one_start_per_tid [reuse, heuristic=SC]:
   "All tid actor actor2 role role2 #i #j. Start(tid, actor, role)@i & Start(tid, actor2, role2)@j ==>#i=#j"
 !>)
 
@@ -47,7 +47,7 @@ lemma nst_source [typing]:
 */
 
 define(<!lemma_matching_nonces!>, <!
-lemma matching_nonces [reuse]:
+lemma matching_nonces [reuse, heuristic=S]:
   "All tid tid2 actor actor2 role  nonces #i #j. 
     running(Nonces, actor, role, nonces)@i & 
     running2(Nonces, actor2, role, nonces)@j ==>
@@ -55,21 +55,21 @@ lemma matching_nonces [reuse]:
 !>)
 
 define(<!lemma_consistent_nonces!>, <!
-lemma consistent_nonces [reuse]:
+lemma consistent_nonces [reuse, heuristic=S]:
   "All tid actor role nonces #i. 
     commit(Nonces, actor, role, nonces)@i ==>
       Ex #j. running(Nonces, actor, role, nonces)@j"
 !>)
 
 define(<!lemma_invariant_nonces!>, <!
-lemma invariant_nonces [reuse]:
+lemma invariant_nonces [reuse, heuristic=S]:
   "All tid actor actor2 role role2 nonces nonces2 #i #j.
     running(Nonces, actor, role, nonces)@i & 
     running(Nonces, actor2, role2, nonces2)@j ==> #i = #j"
 !>)
 
 define(<!lemma_matching_rms_nonces!>, <!
-lemma matching_rms_nonces [reuse]:
+lemma matching_rms_nonces [reuse, heuristic=S]:
   "All nonces tid tid2 actor actor2 peer peer2 rms messages #i #j. 
     running(RMS, actor, 'client', peer, rms, messages)@i &
     running2(RMS, actor2, 'server', peer2, rms, messages)@j &
@@ -442,19 +442,19 @@ lemma injective_mutual_entity_authentication [reuse, hide_lemma=posths_rms]:
 */
 
 define(<!lemma_dh_exp_invariant!>, <!
-lemma dh_exp_invariant  [use_induction, reuse]:
+lemma dh_exp_invariant  [use_induction, reuse, heuristic=C]:
   "All tid actor x #i. RevDHExp(tid, actor, x)@i ==>
     Ex #j. DH(tid, actor, x)@j & #j < i"
 !>)
 
 define(<!lemma_one_dh_per_x!>, <!
-lemma one_dh_per_x  [reuse]:
+lemma one_dh_per_x  [reuse, heuristic=C]:
   "All tid tid2 x actor actor2 #i #j. 
     DH(tid, actor, x)@i & DH(tid2, actor2, x)@j ==> #i = #j"
 !>)
 
 define(<!lemma_rev_dh_ordering!>, <!
-lemma rev_dh_ordering  [reuse, use_induction]:
+lemma rev_dh_ordering  [reuse, use_induction, heuristic=C]:
   "All tid actor x #j. 
     DeleteDH(tid, actor, x)@j==>
       ((Ex #i. DH(tid, actor, x) @ i & i < j) & 
@@ -462,7 +462,7 @@ lemma rev_dh_ordering  [reuse, use_induction]:
 !>)
 
 define(<!lemma_rev_dh_before_hs!>, <!
-lemma rev_dh_before_hs  [reuse]:
+lemma rev_dh_before_hs  [reuse, heuristic=I]:
   "All tid actor role hs x #i #j.
     running(HS, actor, role, hs)@j &
     RevDHExp(tid, actor, x)@i ==>

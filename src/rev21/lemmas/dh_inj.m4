@@ -1,6 +1,6 @@
 changequote(<!,!>)
 changecom(<!/*!>,<!*/!>)
-define(<!State!>,<!F_State_$1(shift($@))!>)dnl
+define(<!State!>,<!State_$1(shift($@))!>)dnl
 define(<!ClientCertReq!>,<!L_ClientCertReq($@)!>)dnl
 define(<!ServerCertReq!>,<!L_ServerCertReq($@)!>)dnl
 define(<!CachePSK!>, <!L_CachePSK($@)!>)dnl

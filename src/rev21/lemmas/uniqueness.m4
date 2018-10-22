@@ -13,7 +13,6 @@ include(model.m4i)
 include(all_lemmas.m4i)
 
 
-uniq(C0)
 uniq(C1)
 uniq(C1_retry)
 uniq(S1)
