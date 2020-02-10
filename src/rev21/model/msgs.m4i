@@ -55,13 +55,23 @@ define(<!EncryptedExtensions!>, <!handshake_record('8', $exts)!>)
 
 define(<!CertificateRequest!>, <! handshake_record('13', dnl
   certificate_request_context, dnl
-  $certificate_extensions dnl
+  CertificateExtensions dnl
 )!>)
 
 
-define(<!Certificate!>, <!handshake_record('11', certificate_request_context, certificate)!>)
+define(<!Certificate!>, <!handshake_record('11', certificate_request_context, CertificateExtensions, certificate)!>)
+define(<!DelegatedCredential!>, dnl
+  <!Extension('TBD', dnl
+    Credential, dnl
+    $sig_alg, dnl This assumes the credential has the same signature as the overall cert.
+    cred_signature dnl
+)!>)
+define(<!Credential!>, <!< 'time', dnl
+    $sig_alg, dnl
+    credential>!>)
+
 define(<!CertificateVerify!>, <!handshake_record('15', dnl
-dnl  $sig_alg, Removing 
+dnl  $sig_alg, Removing
   signature dnl
 )!>)
 define(<!Finished!>, <!handshake_record('20', verify_data)!>)

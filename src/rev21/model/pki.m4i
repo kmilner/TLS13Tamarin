@@ -40,3 +40,15 @@ rule Register_pk:
 */
 rule Reveal_Ltk:
   [ !Ltk($A, ~ltkA) ] --[ RevLtk($A) ]-> [ Out(~ltkA) ]
+
+rule Register_dc:
+let
+  credential = pk(~ltkE)
+  cred_signature = compute_credential_signature(~ltkE, ~ltkS, server)
+in
+  [ !Ltk($S, ~ltkS)
+  , !Pk($E, pk(~ltkE))
+  ]
+--[ RegisterDC($E, $S, ~ltkS, pk(~ltkE))
+  ]->
+  [ !DC($E, $S, DelegatedCredential) ]

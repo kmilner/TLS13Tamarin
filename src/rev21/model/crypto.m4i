@@ -47,6 +47,11 @@ define(<!signature_input!>, <!<sig_label($1), HashValue>!>)
 define(<!compute_finished!>, <!hmac(keygen(handshake_traffic_secret($1), fin_key_label()), h(messages))!>)
 define(<!compute_binder!>, <!hmac(keygen(binder_key(), binder), h(binder_messages))!>)
 
+dnl Use as Credential(Delegate key, Authorizor key, role)?
+define(<!cred_label!>, <!'TLS$1delegatedcredentials'!>)
+define(<!compute_credential_signature!>, <!sign{credential_signature_input(pk($2), $3)}$2!>)
+define(<!credential_signature_input!>, <!<cred_label($2), $1, Credential, $sig_alg>!>)
+
 dnl Call as keygen(Secret, phase + ", " + purpose)
 define(<!keygen!>, <!HKDF_Expand_Label($1, $2, '0')!>)
 

@@ -25,6 +25,9 @@ dnl(
 
 dnl Extensions definitions for basic ClientHello
 define(<!ClientHelloExtensions!>, <!<SupportedVersions, NamedGroupList, SignatureSchemeList, KeyShareCH >!>)
+dnl The basic handshake doesn't make any use of CertificateExtensions
+define(<!CertificateExtensions!>, <!<'ce'>!>)dnl
+dnl
 rule client_hello:
 let
     // Initialise state variables to zero.
