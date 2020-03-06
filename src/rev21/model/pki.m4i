@@ -50,5 +50,6 @@ in
   , !Pk($E, pk(~ltkE))
   ]
 --[ RegisterDC($E, $S, ~ltkS, pk(~ltkE))
+  , UseLtk(~ltkS, cred_signature)
   ]->
   [ !DC($E, $S, DelegatedCredential) ]

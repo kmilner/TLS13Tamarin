@@ -212,10 +212,12 @@ lemma matching_sessions [reuse, use_induction, hide_lemma=posths_rms]:
 !>)
 
 define(<!lemma_sig_origin!>, <!
+pushdef(<!CertificateExtensions!>,<!cert_exts!>)dnl
 lemma sig_origin [reuse]:
-  "All certificate certificate_request_context signature verify_data hs_key sig_messages ltkA  #i.
+  "All certificate cert_exts certificate_request_context signature verify_data hs_key sig_messages ltkA  #i.
         KU(senc{Certificate, CertificateVerify, Finished}hs_key)@i & (signature = sign{sig_messages}ltkA) ==>
       (Ex #j. KU(ltkA)@j & #j < i) | (Ex #k. UseLtk(ltkA, signature)@k & #k < #i)"
+popdef(<!CertificateExtensions!>)dnl
 !>)
 
 define(<!lemma_auth_psk!>, <!
@@ -276,11 +278,13 @@ lemma invariant_post_hs [reuse, use_induction, hide_lemma=posths_rms]:
 
 define(<!lemma_handshake_secret!>, <!
 lemma handshake_secret [reuse, use_induction, hide_lemma=posths_rms_weak]:
-  "All tid actor peer role hs aas #i #k.
+  "All tid actor peer role hs aas nc ns #i #k.
     commit(HS, actor, role, hs)@i &
     commit(Identity, actor, role, peer, <aas, 'auth'>)@i &
+    commit(Nonces, actor, role, nc, ns)@i &
     KU(hs)@k ==>
         (Ex #r. RevLtk(peer)@r & #r < #i) |
+        (Ex delegate #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) |
         (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) |
         (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) |
         (Ex rms #r. RevealPSK(actor, rms)@r & #r < #k) |
@@ -296,6 +300,7 @@ lemma pfs_handshake_secret [reuse, hide_lemma=posths_rms_weak]:
     KU(hs)@k &
     (not psk_ke_mode = psk_ke) ==>
         (Ex #r. RevLtk(peer)@r & #r < #i) |
+  (Ex delegate #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) |
         (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) |
         (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) |
         (Ex rms #r. RevealPSK(actor, rms)@r & #r < #i) |
@@ -311,6 +316,7 @@ lemma secret_session_keys [hide_lemma=sig_origin,hide_lemma=posths_rms]:
   "All tid actor peer kw kr pas #i.
       SessionKey(tid, actor, peer, <pas, 'auth'>, <kw, kr>)@i & 
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate role #j #r. commit(DC, actor, role, peer, delegate)@j & #j < #i & RevLtk(delegate)@r & #r < #j) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r) &
@@ -324,6 +330,7 @@ lemma secret_session_keys_pfs [hide_lemma=sig_origin,hide_lemma=posths_rms]:
       SessionKey(tid, actor, peer, <pas, 'auth'>, <kw, kr>)@i & 
       running(Mode, actor, role, psk_ke_mode)@i &
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate #j #r. commit(DC, actor, role, peer, delegate)@j & #j < #i & RevLtk(delegate)@r & #r < #j) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r & #r < #i) &
@@ -341,6 +348,7 @@ lemma session_key_agreement [hide_lemma=sig_origin]:
      running2(Nonces, peer, 'server', nonces)@l &
       // not (Ex #r. RevLtk(actor)@r & #r < #i) &
       not (Ex #r. RevLtk(peer)@r & #r < #i & #r < #k) &
+      not (Ex delegate role #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i & #r < #k) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i & #r < #k) &
       not (Ex rms #r. RevealPSK(actor, rms)@r & #r < #i & #r < #k) &
@@ -366,6 +374,7 @@ lemma entity_authentication [reuse, use_induction]:
   "All tid actor peer nonces cas #i. 
       commit(Nonces, actor, 'client', nonces)@i & commit(Identity, actor, 'client', peer, <cas, 'auth'>)@i &
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate role #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r) &
@@ -381,6 +390,7 @@ lemma transcript_agreement [reuse]:
   "All tid actor peer transcript cas #i.
       commit(Transcript, actor, 'client', transcript)@i & commit(Identity, actor, 'client', peer, <cas, 'auth'>)@i &
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate role #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r) &
@@ -396,6 +406,7 @@ lemma mutual_entity_authentication [reuse, use_induction]:
   "All tid actor peer nonces sas #i.
       commit(Nonces, actor, 'server', nonces)@i & commit(Identity, actor, 'server', peer, <sas, 'auth'>)@i &
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate role #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r) &
@@ -411,6 +422,7 @@ lemma mutual_transcript_agreement [reuse]:
   "All tid actor transcript peer sas #i.
       commit(Transcript, actor, 'server', transcript)@i & commit(Identity, actor, 'server', peer, <sas, 'auth'>)@i & 
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate role #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r) &
@@ -427,6 +439,7 @@ lemma injective_mutual_entity_authentication [reuse, hide_lemma=posths_rms]:
   "All tid actor peer role nonces aas #i.
       commit(Nonces, actor, role, nonces)@i & commit(Identity, actor, role, peer, <aas, 'auth'>)@i &
       not (Ex #r. RevLtk(peer)@r & #r < #i) &
+      not (Ex delegate role #r. commit(DC, actor, role, peer, delegate)@i & RevLtk(delegate)@r & #r < #i) &
       not (Ex tid3 x #r. RevDHExp(tid3, peer, x)@r & #r < #i) &
       not (Ex tid4 y #r. RevDHExp(tid4, actor, y)@r & #r < #i) &
       not (Ex rms #r. RevealPSK(actor, rms)@r) &

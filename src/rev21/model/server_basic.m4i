@@ -278,6 +278,7 @@ in
       Instance(tid, S, 'server'),
       Eq(psk_ke_mode, 'na'),
       UseLtk(~ltkS, signature),
+      running_server(Nonces, nc, ns),
       running_server(Transcript, messages)
     ]->
     [ State(S3, tid, S, C, ServerState),
